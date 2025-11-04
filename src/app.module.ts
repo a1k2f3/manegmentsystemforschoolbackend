@@ -18,9 +18,10 @@ import { VideoModule } from './video/video.module';
 import { ResultModule } from './result/result.module';
 import { TestsesionModule } from './testsesion/testsesion.module';
 import { AcountsModule } from './acounts/acounts.module';
+import { SuperadminModule } from './superadmin/superadmin.module';
 
 @Module({
-  imports: [StudentModule, TeacherModule, AdminModule, SchoolModule, ClassModule, PrincipleModule, TimetableModule, CourseModule, EmployeeModule, AttendenceModule, AsgimentModule, DepartmentModule, QuizModule, VideoModule, ResultModule, TestsesionModule, AcountsModule],
+  imports: [StudentModule, TeacherModule, AdminModule, SchoolModule, ClassModule, PrincipleModule, TimetableModule, CourseModule, EmployeeModule, AttendenceModule, AsgimentModule, DepartmentModule, QuizModule, VideoModule, ResultModule, TestsesionModule, AcountsModule, SuperadminModule],
   controllers: [AppController],
   providers: [AppService],
 })
