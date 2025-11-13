@@ -45,7 +45,10 @@ export class JobApplicationController {
     const applicationData = { ...dto, ...fileMap };
     return this.jobAppService.create(applicationData);
   }
-
+@Get('school/:schoolId')
+  async getBySchool(@Param('schoolId') schoolId: string) {
+    return this.jobAppService.getteacherBySchool(schoolId);
+  }
   @Get()
   async findAll(): Promise<JobApplication[]> {
     return this.jobAppService.findAll();

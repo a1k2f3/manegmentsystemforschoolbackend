@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-
+import { Document, Types } from 'mongoose';
+import { School } from 'src/school/schema/school.schema';
 @Schema({ timestamps: true })
 export class JobApplication extends Document {
   @Prop({ required: true })
@@ -48,7 +48,8 @@ export class JobApplication extends Document {
 
   @Prop()
   degree: string;
-
+@Prop({ type: Types.ObjectId, ref: School.name, required: true })
+  schoolId: Types.ObjectId;
   @Prop()
   photo: string;
 }
