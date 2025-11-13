@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { JobApplicationService } from './jobapplication.service';
 import { CreateJobApplicationDto } from './dto/jobapplication.dto';
-import { JobApplication } from './jobapplication.schema';
+import { JobApplication } from './schemas/jobapplication.schema';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';

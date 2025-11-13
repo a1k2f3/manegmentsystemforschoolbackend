@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 // import { JobApplicationController } from './jobapplication.controller';
 import { JobApplicationController } from './jobapplication.controller';
 import { JobApplicationService } from './jobapplication.service';
-import { JobApplication, JobApplicationSchema } from './jobapplication.schema';
+import { JobApplication, JobApplicationSchema } from './schemas/jobapplication.schema';
 
 @Module({
   imports: [
