@@ -12,7 +12,23 @@ export class AttendanceController {
   async mark(@Body() dto: CreateAttendanceDto) {
     return this.attendanceService.markAttendance(dto);
   }
+@Get('generate-qr/:classId/:schoolId')
+async generateQr(
+  @Param('classId') classId: string,
+  @Param('schoolId') schoolId: string,
+) {
+  return this.attendanceService.generateQrCode(classId, schoolId);
+}
 
+
+// 🎯 Mark attendance using QR code (mobile scan)
+@Post('scan')
+async scanAttendance(
+  @Body('studentId') studentId: string,
+  @Body('qrData') qrData: any,
+) {
+  return this.attendanceService.markViaQr(studentId, qrData);
+}
   // Class-wise
   @Get('class/:classId')
   async classAttendance(

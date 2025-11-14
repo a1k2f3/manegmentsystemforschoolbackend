@@ -7,7 +7,7 @@ import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { Class, ClassDocument } from 'src/class/schemas/class.schemas';
 import { School, SchoolDocument } from 'src/school/schema/school.schema';
 import { Student, StudentDocument } from 'src/student/schemas/student.schema';
-
+import * as QRCode from 'qrcode';
 @Injectable()
 export class AttendanceService {
   constructor(
@@ -71,6 +71,77 @@ export class AttendanceService {
     }
     return this.attendanceModel.find(query).populate('student classId schoolId');
   }
+
+async generateQrCode(classId: string, schoolId: string) {
+  const now = new Date();
+  const dateCode = now.toISOString().split('T')[0]; // 2025-11-14
+
+  const secureToken = new Types.ObjectId().toString();
+
+  const qrPayload = {
+    classId,
+    schoolId,
+    date: dateCode,
+    token: secureToken,
+  };
+
+  const qrString = JSON.stringify(qrPayload);
+
+  const qrImage = await QRCode.toDataURL(qrString);
+
+  return {
+    message: 'QR Generated Successfully',
+    qrImage, // Base64 image for frontend
+    data: qrPayload,
+  };
+}
+async markViaQr(studentId: string, qrData: any) {
+  const { classId, schoolId, date } = qrData;
+
+  // Validate IDs
+  if (![classId, schoolId, studentId].every(Types.ObjectId.isValid)) {
+    throw new BadRequestException('Invalid IDs in QR Data');
+  }
+
+  const student = await this.studentModel.findById(studentId);
+  if (!student) throw new NotFoundException('Student not found');
+
+  const klass = await this.classModel.findById(classId);
+  if (!klass) throw new NotFoundException('Class not found');
+
+  const school = await this.schoolModel.findById(schoolId);
+  if (!school) throw new NotFoundException('School not found');
+
+  // Ensure the QR code is for today
+  const today = new Date().toISOString().split('T')[0];
+  if (date !== today) {
+    throw new BadRequestException('QR code expired (Not for today)');
+  }
+
+  // Check if already marked
+  const already = await this.attendanceModel.findOne({
+    student: studentId,
+    classId,
+    schoolId,
+    date: {
+      $gte: new Date(today + 'T00:00:00'),
+      $lte: new Date(today + 'T23:59:59'),
+    },
+  });
+
+  if (already) throw new BadRequestException('Attendance already marked for today');
+
+  // Save attendance
+  const attendance = new this.attendanceModel({
+    student: studentId,
+    classId,
+    schoolId,
+    status: 'present',
+    date: new Date(),
+  });
+
+  return attendance.save();
+}
 
   // ✅ School-wise attendance
   async getBySchool(schoolId: string, month?: number, year?: number) {
