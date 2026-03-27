@@ -19,9 +19,10 @@ import { TestsesionModule } from './testsesion/testsesion.module';
 import { AcountsModule } from './acounts/acounts.module';
 import { SuperadminModule } from './superadmin/superadmin.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { LibraryModule } from './library/library.module';
 @Module({
   imports: [MongooseModule.forRoot('mongodb://localhost/erpdb'),  
-    StudentModule, AdminModule, SchoolModule, ClassModule, TimetableModule, CourseModule,  AttendanceModule, AsgimentModule, DepartmentModule, QuizModule, VideoModule, ResultModule, TestsesionModule, AcountsModule, SuperadminModule],
+    StudentModule, AdminModule, SchoolModule, ClassModule, TimetableModule, CourseModule,  AttendanceModule, AsgimentModule, DepartmentModule, QuizModule, VideoModule, ResultModule, TestsesionModule, AcountsModule, SuperadminModule, LibraryModule],
   controllers: [AppController],
   providers: [AppService],
 })
