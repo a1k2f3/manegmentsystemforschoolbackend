@@ -84,4 +84,15 @@ export class CreateStudentDto {
   // ✅ Reference to School
   @IsNotEmpty()
   schoolId: Types.ObjectId; // required field
+
+
+
+}
+
+  export class AssignStudentDto {
+
+  studentId: string;
+
+  routeId: string;
+
 }
