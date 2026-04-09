@@ -7,22 +7,22 @@ export type RouteDocument = Route & Document;
 export class Route {
 
   @Prop({ required: true })
-  routeName: string; // R-01 Dwarka
+  routeName?: string; // R-01 Dwarka
 
   @Prop({ type: Types.ObjectId, ref: 'Vehicle' })
-  vehicle: Types.ObjectId;
+  vehicle?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Driver' })
-  driver: Types.ObjectId;
+  driver?: Types.ObjectId;
 
   @Prop()
-  capacity: number;
+  capacity?: number;
 
   @Prop()
-  fee: number;
+  fee?: number;
 
   @Prop({ default: true })
-  isActive: boolean;
+  isActive?: boolean;
 }
 
 export const RouteSchema = SchemaFactory.createForClass(Route);
