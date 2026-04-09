@@ -8,16 +8,16 @@ export type VehicleDocument = Vehicle & Document;
 
 export class Vehicle {
   @Prop({ required: true })
-  registrationNumber: string; // R-01 Dwarka
+  registrationNumber?: string; // R-01 Dwarka
 
   @Prop({ required: true })
-  vehicleType: string;
+  vehicleType?: string;
 
   @Prop({ required: true })
-  insuranceexpiryDate: Date;
+  insuranceexpiryDate?: Date;
 
   @Prop({default: true})
-  pullutioncertificate: boolean;
+  pullutioncertificate?: boolean;
 
 }  
 export const VehicleSchema = SchemaFactory.createForClass(Vehicle);
