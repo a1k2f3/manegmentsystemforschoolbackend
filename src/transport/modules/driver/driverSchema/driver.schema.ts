@@ -11,19 +11,19 @@ export class Driver{
 
     @Prop({required:true})
 
-    driverName:string;
+    driverName?:string;
 
     @Prop({required:true})
-    LicenseNumber:string;
+    LicenseNumber?:string;
 
     @Prop({required:true})
-    mobileNumber:string;
+    mobileNumber?:string;
 
     @Prop({ type: Types.ObjectId, ref: 'Route' })
-    route: Types.ObjectId;
+    route?: Types.ObjectId;
 
     @Prop({required:true})
-    status:{
+    status?:{
         type:String,
         enum:['active','inactive'],
         default:'active'
