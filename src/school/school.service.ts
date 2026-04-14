@@ -8,8 +8,13 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class SchoolService {
-   @InjectModel(School.name) private schoolModel: Model<SchoolDocument>
+   @InjectModel(School.name)
+  private schoolModel!: Model<SchoolDocument>;
   private readonly jwtService: JwtService;
+
+  constructor(jwtService: JwtService) {
+    this.jwtService = jwtService;
+  }
 
   async create(createSchoolDto: CreateSchoolDto): Promise<School> {
     const school = new this.schoolModel(createSchoolDto);
