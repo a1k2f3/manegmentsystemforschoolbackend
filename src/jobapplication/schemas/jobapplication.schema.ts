@@ -1,57 +1,57 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { School } from 'src/school/schema/school.schema';
+import { School } from '../../school/schema/school.schema';
 @Schema({ timestamps: true })
 export class JobApplication extends Document {
   @Prop({ required: true })
-  name: string;
+  name?: string;
 
   @Prop({ required: true })
-  email: string;
+  email?: string;
 
   @Prop({ required: true })
-  phone: string;
+  phone?: string;
 
   @Prop()
-  address: string;
+  address?: string;
 
   @Prop()
-  position: string;
+  position?: string;
 
   @Prop()
-  gender: string;
+  gender?: string;
 
   @Prop()
-  qualification: string;
+  qualification?: string;
 
   @Prop()
-  university: string;
+  university?: string;
 
   @Prop()
-  yearOfPassing: string;
+  yearOfPassing?: string;
 
   @Prop()
-  cgpa: string;
+  cgpa?: string;
 
   @Prop()
-  lastJob: string;
+  lastJob?: string;
 
   @Prop()
-  yearsOfExperience: string;
+  yearsOfExperience?: string;
 
   @Prop()
-  skills: string;
+  skills?: string;
 
   // New fields for uploaded file URLs
   @Prop()
-  cv: string;
+  cv?: string;
 
   @Prop()
-  degree: string;
+  degree?: string;
 @Prop({ type: Types.ObjectId, ref: School.name, required: true })
-  schoolId: Types.ObjectId;
+  schoolId?: Types.ObjectId;
   @Prop()
-  photo: string;
+  photo?: string;
 }
 
 export const JobApplicationSchema = SchemaFactory.createForClass(JobApplication);

@@ -1,5 +1,5 @@
+// import { Vehicle } from "../VehicleSchema/vehicle.schema";
 import { Vehicle } from "../VehicleSchema/vehicle.schema";
-
 import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";

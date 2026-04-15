@@ -4,17 +4,21 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Attendance, AttendanceDocument } from './schemas/attendance.schemas';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
-import { Class, ClassDocument } from 'src/class/schemas/class.schemas';
-import { School, SchoolDocument } from 'src/school/schema/school.schema';
-import { Student, StudentDocument } from 'src/student/schemas/student.schema';
+// import { Class, ClassDocument } from 'src/class/schemas/class.schemas';
+import { Class } from '../class/schemas/class.schemas';
+// import { School, SchoolDocument } from 'src/school/schema/school.schema';
+import { School } from '../school/schema/school.schema';
+import { Student } from '../student/schemas/student.schema';
+// import { Student, StudentDocument } from 'src/student/schemas/student.schema';
+// import { Student, StudentDocument } from 'src/student/schemas/student.schema';
 import * as QRCode from 'qrcode';
 @Injectable()
 export class AttendanceService {
   constructor(
     @InjectModel(Attendance.name) private attendanceModel: Model<AttendanceDocument>,
-    @InjectModel(Class.name) private classModel: Model<ClassDocument>,
-    @InjectModel(School.name) private schoolModel: Model<SchoolDocument>,
-    @InjectModel(Student.name) private studentModel: Model<StudentDocument>,
+    @InjectModel(Class.name) private classModel: Model<Class>,
+    @InjectModel(School.name) private schoolModel: Model<School>,
+    @InjectModel(Student.name) private studentModel: Model<Student>,
   ) {}
 
   // ✅ Mark attendance (QR code or manual)
@@ -166,9 +170,11 @@ async markViaQr(studentId: string, qrData: any) {
 
     const report: Record<string, { present: number; absent: number; leave: number }> = {};
     records.forEach(r => {
-      const studentName = r.student.name;
+      const studentName = r.student?.name as string;
       if (!report[studentName]) report[studentName] = { present: 0, absent: 0, leave: 0 };
-      report[studentName][r.status]++;
+      if (r.status && ['present', 'absent', 'leave'].includes(r.status)) {
+        report[studentName][r.status as keyof typeof report[string]]++;
+      }
     });
 
     return report;

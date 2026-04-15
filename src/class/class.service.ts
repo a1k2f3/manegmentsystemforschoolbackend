@@ -8,13 +8,14 @@ import { Model, Types } from 'mongoose';
 import { Class, ClassDocument } from './schemas/class.schemas';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
-import { School, SchoolDocument } from 'src/school/schema/school.schema';
+// import { School } from '../../school/schema/school.schema';
+import { School } from '../school/schema/school.schema';
 
 @Injectable()
 export class ClassService {
   constructor(
     @InjectModel(Class.name) private classModel: Model<ClassDocument>,
-    @InjectModel(School.name) private schoolModel: Model<SchoolDocument>, // used to validate schoolId
+    @InjectModel(School.name) private schoolModel: Model<School>, // used to validate schoolId
   ) {}
 
   // Create a class — validates schoolId exists
@@ -55,6 +56,11 @@ async addStudentToClass(classId: string, studentId: string) {
   const klass = await this.classModel.findById(classId);
   if (!klass) throw new NotFoundException('Class not found');
 
+  // Initialize studentIds if undefined
+  if (!klass.studentIds) {
+    klass.studentIds = [];
+  }
+
   // prevent duplicate student entry
   if (klass.studentIds.includes(studentId as any)) {
     throw new BadRequestException('Student already in this class');
@@ -72,6 +78,11 @@ async removeStudentFromClass(classId: string, studentId: string) {
 
   const klass = await this.classModel.findById(classId);
   if (!klass) throw new NotFoundException('Class not found');
+
+  // Initialize studentIds if undefined
+  if (!klass.studentIds) {
+    klass.studentIds = [];
+  }
 
   klass.studentIds = klass.studentIds.filter(
     id => id.toString() !== studentId,

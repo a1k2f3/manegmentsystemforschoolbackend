@@ -6,13 +6,13 @@ export type ClassDocument = Class & Document;
 @Schema({ timestamps: true })
 export class Class {
   @Prop({ required: true })
-  className: string;
+  className?: string;
 
   @Prop()
   section?: string;
 
   @Prop({ type: Types.ObjectId, ref: 'School', required: true })
-  schoolId: Types.ObjectId;
+  schoolId?: Types.ObjectId;
 
   // ⭐ Reference to Job Application (instead of Teacher)
   @Prop({ type: Types.ObjectId, ref: 'JobApplication', required: false })
@@ -20,10 +20,10 @@ export class Class {
 
   // ⭐ Reference to Students
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Student' }], default: [] })
-  studentIds: Types.ObjectId[];
+  studentIds?: Types.ObjectId[];
 
   @Prop({ default: 0 })
-  strength: number;
+  strength?: number;
 
   @Prop({ default: 'active' })
   status?: string;

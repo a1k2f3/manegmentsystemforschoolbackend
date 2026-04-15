@@ -4,9 +4,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AttendanceService } from './attendence.service';
 import { AttendanceController } from './attendence.controller';
 import { Attendance, AttendanceSchema } from './schemas/attendance.schemas';
-import { Student, StudentSchema } from 'src/student/schemas/student.schema';
-import { Class, ClassSchema } from 'src/class/schemas/class.schemas';
-import { School, SchoolSchema } from 'src/school/schema/school.schema';
+import { Student, StudentSchema } from '../student/schemas/student.schema';
+import { Class, ClassSchema } from '../class/schemas/class.schemas';
+import { School, SchoolSchema } from '../school/schema/school.schema';
 
 @Module({
   imports: [
