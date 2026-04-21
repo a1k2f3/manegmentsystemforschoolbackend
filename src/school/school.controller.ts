@@ -5,11 +5,12 @@ import { CreateSchoolDto } from './dto/create-school.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
 import { diskStorage } from 'multer';           // Add this import if needed
 import { multerConfig } from '../config/multer.config'
+import { LoginSchoolDto } from './dto/login-school.dto';
 @Controller('school')
 export class SchoolController {
   constructor(private readonly schoolService: SchoolService) {}
 
- @Post('create')
+@Post('create')
 @UseInterceptors(
   FileFieldsInterceptor(
     [
@@ -39,6 +40,14 @@ create(
   }
 
   return this.schoolService.create(createSchoolDto);
+}
+@Post('login')
+login(@Body() loginDto: LoginSchoolDto) {
+  if (!loginDto.email || !loginDto.password) {
+    throw new Error('Email and password are required');
+  }
+  console.log('Login attempt:', loginDto.email);
+  return this.schoolService.login(loginDto.email, loginDto.password);
 }
 
   @Get()

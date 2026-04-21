@@ -23,9 +23,10 @@ import { LibraryModule } from './library/library.module';
 import { RoutesModule } from './transport/modules/routes/routesModule/routes.Module';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerConfig } from './config/multer.config';
+import { EventModule } from './event/event.module';
 @Module({
   imports: [MongooseModule.forRoot('mongodb://localhost/erpdb'), MulterModule.register(multerConfig),
-    StudentModule, AdminModule, SchoolModule, ClassModule, TimetableModule, CourseModule,  AttendanceModule, AsgimentModule, DepartmentModule, QuizModule, VideoModule, ResultModule, TestsesionModule, AcountsModule, SuperadminModule, LibraryModule, RoutesModule],
+    StudentModule, AdminModule, SchoolModule, ClassModule, TimetableModule, CourseModule,  AttendanceModule, AsgimentModule, DepartmentModule, QuizModule, VideoModule, ResultModule, TestsesionModule, AcountsModule, SuperadminModule, LibraryModule, RoutesModule, EventModule],
   controllers: [AppController],
   providers: [AppService],
 })

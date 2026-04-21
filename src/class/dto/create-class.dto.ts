@@ -3,14 +3,14 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateClassDto {
   @IsNotEmpty()
   @IsString()
-  className: string;
+  className?: string;
 
   @IsOptional()
   @IsString()
   section?: string;
 
   @IsNotEmpty()
-  schoolId: string; // validated in service as ObjectId
+  schoolId?: string; // validated in service as ObjectId
 
   @IsOptional()
   @IsString()

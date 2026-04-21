@@ -21,7 +21,7 @@ export class ClassService {
   // Create a class — validates schoolId exists
   async create(createDto: CreateClassDto): Promise<Class> {
     const { schoolId } = createDto;
-    if (!Types.ObjectId.isValid(schoolId)) {
+    if (!schoolId || !Types.ObjectId.isValid(schoolId)) {
       throw new BadRequestException('Invalid schoolId');
     }
 
