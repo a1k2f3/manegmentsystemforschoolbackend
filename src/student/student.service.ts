@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -18,51 +19,76 @@ export class StudentService {
   ) {}
 
   // 🧾 Create new student (Registration)
-  async createStudent(createStudentDto: CreateStudentDto, files?: Express.Multer.File[]) {
-    try {
-      const [birthCertificate, bForm, photo] = files || [];
+async createStudent(createStudentDto: CreateStudentDto, files?: any) {
+  try {
+    const { email, password, schoolId, classId } = createStudentDto;
 
-      // Validate schoolId
-      if (!Types.ObjectId.isValid(createStudentDto.schoolId)) {
-        throw new BadRequestException('Invalid school ID');
-      }
-
-      // Check if email already exists
-      const existingStudent = await this.studentModel.findOne({
-        email: createStudentDto.email,
-      });
-      if (existingStudent) throw new BadRequestException('Email already registered');
-
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(createStudentDto.password, 10);
-
-      const newStudent = new this.studentModel({
-        ...createStudentDto,
-        password: hashedPassword,
-        birthCertificate: birthCertificate?.path || null,
-        bForm: bForm?.path || null,
-        photo: photo?.path || null,
-        status: 'inactive',
-      });
-
-      const savedStudent = await newStudent.save();
-      return {
-        message: 'Student registered successfully',
-        student: savedStudent,
-      };
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    // 1. Ensure IDs exist AND are valid ObjectIds
+    // This check satisfies TypeScript because it confirms the variables aren't undefined
+    if (!schoolId || !classId || !Types.ObjectId.isValid(schoolId) || !Types.ObjectId.isValid(classId)) {
+      throw new BadRequestException('School ID and Class ID are required and must be valid');
     }
-  }
 
+    // 2. Check if email already exists
+    const existingStudent = await this.studentModel.findOne({ email });
+    if (existingStudent) {
+      throw new BadRequestException('Email already registered');
+    }
+
+    // 3. Extract file paths securely
+    const birthCertificate = files?.birthCertificate?.[0]?.path || null;
+    const bForm = files?.bForm?.[0]?.path || null;
+    const photo = files?.photo?.[0]?.path || null;
+
+    // 4. Hash the password (check if password exists to satisfy TS)
+    if (!password) {
+      throw new BadRequestException('Password is required');
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 5. Create new instance
+    // We use "as string" here because our check above guaranteed they aren't undefined
+    const newStudent = new this.studentModel({
+      ...createStudentDto,
+      password: hashedPassword,
+      schoolId: new Types.ObjectId(schoolId as string),
+      classId: new Types.ObjectId(classId as string),
+      birthCertificate,
+      bForm,
+      photo,
+      status: 'inactive',
+    });
+
+    const savedStudent = await newStudent.save();
+
+    return {
+      message: 'Student registered successfully',
+      student: savedStudent,
+    };
+
+  } catch (error: any) {
+    if (error.code === 11000) {
+      throw new BadRequestException('Unique constraint violation (Email or StudentId)');
+    }
+
+    if (error.message?.includes('buffering timed out')) {
+      throw new InternalServerErrorException('Database connection lost or too slow');
+    }
+
+    // Re-throw the original BadRequestException if it was one of ours
+    if (error instanceof BadRequestException) {
+      throw error;
+    }
+
+    throw new BadRequestException(error?.message || 'Registration failed');
+  }
+}
   // 🔐 Login Student
   async login(email: string, password: string) {
-    const student = await this.studentModel.findOne({ email });
+    const student = await this.studentModel.findOne({ email:email });
     if (!student) throw new NotFoundException('Student not found');
-
     const isPasswordValid = await bcrypt.compare(password, student.password);
     if (!isPasswordValid) throw new UnauthorizedException('Invalid password');
-
     // Generate JWT token
     const token = await this.jwtService.signAsync({
       id: student._id,
@@ -113,12 +139,14 @@ export class StudentService {
   async updateStudent(
     id: string,
     updateData: Partial<CreateStudentDto>,
-    files?: Express.Multer.File[],
+    files?: any,
   ) {
     const student = await this.studentModel.findById(id);
     if (!student) throw new NotFoundException('Student not found');
 
-    const [birthCertificate, bForm, photo] = files || [];
+    const birthCertificate = files?.birthCertificate?.[0]?.path || student.birthCertificate;
+    const bForm = files?.bForm?.[0]?.path || student.bForm;
+    const photo = files?.photo?.[0]?.path || student.photo;
 
     if (updateData.password) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
@@ -128,9 +156,9 @@ export class StudentService {
       id,
       {
         ...updateData,
-        birthCertificate: birthCertificate?.path || student.birthCertificate,
-        bForm: bForm?.path || student.bForm,
-        photo: photo?.path || student.photo,
+        birthCertificate,
+        bForm,
+        photo,
       },
       { new: true },
     );
@@ -139,15 +167,21 @@ export class StudentService {
   }
 // 🔍 Get all students of a specific school
 async getStudentsBySchool(schoolId: string) {
+  // 1. Validate format
   if (!Types.ObjectId.isValid(schoolId)) {
-    throw new BadRequestException('Invalid school ID');
+    throw new BadRequestException('Invalid school ID format');
   }
 
+  // 2. Explicitly convert to ObjectId for the query
   const students = await this.studentModel
-    .find({ schoolId })
-    .populate('schoolId') // optional: populate school details
-    .sort({ createdAt: -1 });
+    .find({ schoolId: new Types.ObjectId(schoolId) }) // Explicit cast
+    .populate('schoolId') 
+    .populate('classId')  // It's usually helpful to see the class too
+    .sort({ createdAt: -1 })
+    .exec();
 
+  console.log(`📊 Found ${students.length} students for school ID: ${schoolId}`);
+  
   return students;
 }
 

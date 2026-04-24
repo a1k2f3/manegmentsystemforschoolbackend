@@ -6,28 +6,28 @@ export type EventDocument = Event & Document;
 @Schema({ timestamps: true })
 export class Event {
   @Prop({ required: true, unique: true })
-  name: string;
+  name?: string;
 
   @Prop({ required: true })
-  type: string;
+  type?: string;
 
   @Prop({ required: true })
-  date: Date;
+  date?: Date;
 
   @Prop({ required: true })
-  time: string;
+  time?: string;
 
   @Prop({ required: true })
-  venue: string;
+  venue?: string;
 
   @Prop({ required: true })
-  chiefGuest: string;
+  chiefGuest?: string;
 
   @Prop({ required: true, min: 0 })
-  totalSlots: number;
+  totalSlots?: number;
 
   @Prop({ required: true, min: 0 })
-  availableSlots: number;
+  availableSlots?: number;
 
   @Prop({ 
     type: Types.ObjectId, 
@@ -35,10 +35,10 @@ export class Event {
     required: true,
     index: true 
   })
-  schoolId: Types.ObjectId;   // Now it's ObjectId reference
+  schoolId?: Types.ObjectId;   // Now it's ObjectId reference
 
   @Prop({ default: 'upcoming' })
-  status: string;
+  status?: string;
 
   @Prop()
   description?: string;

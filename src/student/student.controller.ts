@@ -9,7 +9,7 @@ import {
   UploadedFiles,
   Delete,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { StudentService } from './student.service';
@@ -31,16 +31,20 @@ export class StudentController {
   // 🧾 Create new student (registration) with file uploads
   @Post('create')
   @UseInterceptors(
-    FilesInterceptor('files', 3, {
-      storage: diskStorage({
-        destination: './uploads/students',
-        filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, uniqueSuffix + extname(file.originalname));
-        },
-      }),
+  FileFieldsInterceptor([
+    { name: 'birthCertificate', maxCount: 1 },
+    { name: 'bForm', maxCount: 1 },
+    { name: 'photo', maxCount: 1 },
+  ], {
+    storage: diskStorage({
+      destination: './uploads/students',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, uniqueSuffix + extname(file.originalname));
+      },
     }),
-  )
+  }),
+)
   async createStudent(
     @Body() createStudentDto: CreateStudentDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
@@ -55,11 +59,10 @@ export class StudentController {
   }
 
   // 🔍 Get students by school
-  @Get('school/:schoolId')
-  async getBySchool(@Param('schoolId') schoolId: string) {
-    return this.studentService.getStudentsBySchool(schoolId);
-  }
-
+@Get('school/:id')
+async getBySchool(@Param('id') schoolId: string) { // Removed the colon here
+  return this.studentService.getStudentsBySchool(schoolId);
+}
   // 🔍 Get student by ID
   @Get(':id')
   async getStudentById(@Param('id') id: string) {

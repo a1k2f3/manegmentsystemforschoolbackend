@@ -4,28 +4,25 @@ export class CreateCourseDto {
   @IsString()
   @IsNotEmpty()
   @Length(3, 100)
-  name: string;
+  name?: string;
 
   @IsString()
   @IsNotEmpty()
   @Length(3, 15)
-  code: string;
+  code?: string;
 
   @IsString()
   @IsNotEmpty()
-  academicYear: string;
+  academicYear?: string;
 
   @IsMongoId()
   @IsNotEmpty()
-  school: string;
+  school?: string;
 
-  @IsMongoId()
-  @IsNotEmpty()
-  subject: string;
 
-  @IsMongoId()
-  @IsOptional()
-  department?: string;
+  // @IsMongoId()
+  // @IsOptional()
+  // department?: string;
 
   @IsArray()
   @IsMongoId({ each: true })

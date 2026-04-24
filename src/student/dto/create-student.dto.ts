@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsString, IsOptional, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsEmail, IsMongoId } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class CreateStudentDto {
   // ✅ Basic Information
   @IsNotEmpty()
   @IsString()
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsString()
@@ -57,11 +57,11 @@ export class CreateStudentDto {
   // ✅ Account Info
   @IsNotEmpty()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @IsNotEmpty()
   @IsString()
-  password: string;
+  password?: string;
 
   // ✅ Status
   @IsOptional()
@@ -82,17 +82,19 @@ export class CreateStudentDto {
   photo?: string;
 
   // ✅ Reference to School
-  @IsNotEmpty()
-  schoolId: Types.ObjectId; // required field
+@IsNotEmpty()
+@IsMongoId()
+schoolId?: string;
+
+@IsNotEmpty()
+@IsMongoId()
+classId?: string;// required field
 
 
 
 }
 
   export class AssignStudentDto {
-
-  studentId: string;
-
-  routeId: string;
-
+  studentId?: string;
+  routeId?: string;
 }

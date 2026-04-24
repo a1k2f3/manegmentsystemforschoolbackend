@@ -1,57 +1,57 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Book, BookDocument } from './schema/book.schema';
 import { CreateBookDto } from './create-book.dto';
 import { UpdateBookDto } from './update-book.dto';
 
 @Injectable()
 export class LibraryService {
-
-  private libraries: any[] = [];
-  private id = 1;
+  constructor(@InjectModel(Book.name) private bookModel: Model<BookDocument>) {}
 
   // CREATE
-  create(createLibraryDto: CreateBookDto) {
-    const library = {
-      id: this.id++,
-      ...createLibraryDto,
-    };
-
-    this.libraries.push(library);
-    return library;
+  async create(createBookDto: CreateBookDto, filePath?: string) {
+    const newBook = new this.bookModel({
+      ...createBookDto,
+      pdfPath: filePath || null,
+    });
+    return await newBook.save();
   }
 
   // GET ALL
-  findAll() {
-    return this.libraries;
+  async findAll() {
+    return await this.bookModel.find().sort({ createdAt: -1 }).exec();
   }
 
   // GET ONE
-  findOne(id: number) {
-    const library = this.libraries.find(l => l.id === id);
-
-    if (!library) {
-      throw new NotFoundException('Library item not found');
+  async findOne(id: string) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid ID format');
     }
-
-    return library;
+    const book = await this.bookModel.findById(id).exec();
+    if (!book) throw new NotFoundException('Book not found');
+    return book;
   }
 
   // UPDATE
-  update(id: number, updateLibraryDto: UpdateBookDto) {
-    const library = this.findOne(id);
-
-    Object.assign(library, updateLibraryDto);
-
-    return library;
+  async update(id: string, updateBookDto: UpdateBookDto) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid ID format');
+    }
+    const updatedBook = await this.bookModel
+      .findByIdAndUpdate(id, updateBookDto, { new: true })
+      .exec();
+    if (!updatedBook) throw new NotFoundException('Book not found');
+    return updatedBook;
   }
 
   // DELETE
-  remove(id: number) {
-    const index = this.libraries.findIndex(l => l.id === id);
-
-    if (index === -1) {
-      throw new NotFoundException('Library item not found');
+  async remove(id: string) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid ID format');
     }
-
-    return this.libraries.splice(index, 1);
+    const deleted = await this.bookModel.findByIdAndDelete(id).exec();
+    if (!deleted) throw new NotFoundException('Book not found');
+    return { message: 'Book deleted successfully' };
   }
 }

@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 @Schema({ _id: false }) // embedded → no separate _id
 export class QuestionOption {
   @Prop({ required: true })
-  text: string;
+  text?: string;
 
   @Prop({ default: false })
   isCorrect?: boolean; // optional - if you prefer marking correct in options
@@ -15,10 +15,10 @@ export const QuestionOptionSchema = SchemaFactory.createForClass(QuestionOption)
 @Schema({ _id: false })
 export class Question {
   @Prop({ required: true, trim: true })
-  text: string;
+  text?: string;
 
   @Prop({ type: [QuestionOptionSchema], minlength: 2, maxlength: 6 })
-  options: QuestionOption[];
+  options?: QuestionOption[];
 
   // ── Alternative A: store correct as index (most common & efficient) ──
   @Prop({ type: Number, min: 0 })

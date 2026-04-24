@@ -20,7 +20,7 @@ import { EnrollStudentDto } from './dto/enroll-student.dto';
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.create(createCourseDto);
   }
@@ -29,10 +29,10 @@ export class CoursesController {
   findAll(
     @Query('schoolId') schoolId?: string,
     @Query('academicYear') academicYear?: string,
-    @Query('subjectId') subjectId?: string,
-    @Query('departmentId') departmentId?: string,
+    // @Query('subjectId') subjectId?: string,
+   
   ) {
-    return this.coursesService.findAll(schoolId, academicYear, subjectId, departmentId);
+    return this.coursesService.findAll(schoolId, academicYear,);
   }
 
   @Get(':id')
@@ -50,7 +50,13 @@ export class CoursesController {
   remove(@Param('id') id: string) {
     return this.coursesService.remove(id);
   }
-
+@Get('teacher/:teacherId')
+async findByTeacher(
+  @Param('teacherId') teacherId: string,
+  @Query('academicYear') academicYear?: string,
+) {
+  return this.coursesService.findAllByTeacher(teacherId, academicYear);
+}
   @Patch(':id/teachers')
   addTeacher(@Param('id') id: string, @Body() dto: AssignTeacherToCourseDto) {
     return this.coursesService.addTeacher(id, dto);

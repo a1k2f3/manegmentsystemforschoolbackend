@@ -10,14 +10,14 @@ export type QuizDocument = Quiz & Document;
 })
 export class Quiz {
   @Prop({ required: true, trim: true, minlength: 3, maxlength: 150 })
-  title: string;
+  title?: string;
 
   @Prop({ trim: true })
   description?: string;
 
   // Reference to Course (most important relation)
   @Prop({ type: Types.ObjectId, ref: 'Course', required: true, index: true })
-  course: Types.ObjectId;
+  course?: Types.ObjectId;
 
   // Optional: direct class/grade reference (e.g. "Class 8", "Grade 10")
   // Useful if quizzes are sometimes class-specific rather than course-specific
@@ -26,19 +26,19 @@ export class Quiz {
 
   // Questions embedded (most common for quizzes < 100 questions)
   @Prop({ type: [QuestionSchema], default: [] })
-  questions: Question[];
+  questions?: Question[];
 
   @Prop({ default: 0 })
-  totalMarks: number; // can be auto-calculated in pre-save hook
+  totalMarks?: number; // can be auto-calculated in pre-save hook
 
   @Prop({ default: 30 })
   timeLimitMinutes?: number;
 
   @Prop({ default: true })
-  isActive: boolean;
+  isActive?: boolean;
 
   @Prop({ enum: ['Draft', 'Published', 'Archived'], default: 'Draft' })
-  status: string;
+  status?: string;
 
   @Prop({ default: 1 })
   maxAttempts?: number; // per student
@@ -65,9 +65,14 @@ export const QuizSchema = SchemaFactory.createForClass(Quiz);
 
 // Optional: auto-calculate total marks before save
 QuizSchema.pre('save', function (next) {
-  if (this.questions?.length > 0) {
-    this.totalMarks = this.questions.reduce((sum, q) => sum + (q.marks || 1), 0);
+  const questions = this.questions ?? [];
+
+  if (questions.length > 0) {
+    this.totalMarks = questions.reduce((sum, q) => sum + (q.marks ?? 1), 0);
+  } else {
+    this.totalMarks = 0;
   }
+
   next();
 });
 

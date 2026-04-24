@@ -40,6 +40,10 @@ export class EventService {
   }
 
   async findOne(id: string): Promise<Event> {
+    // Validate if id is a valid MongoDB ObjectId
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid event ID format');
+    }
     const event = await this.eventModel
       .findById(id)
       .populate('schoolId', 'name code')
@@ -49,6 +53,10 @@ export class EventService {
   }
 
   async update(id: string, updateEventDto: UpdateEventDto): Promise<Event> {
+    // Validate if id is a valid MongoDB ObjectId
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid event ID format');
+    }
     if (updateEventDto.schoolId) {
       updateEventDto.schoolId = new Types.ObjectId(updateEventDto.schoolId) as any;
     }
@@ -63,12 +71,20 @@ export class EventService {
   }
 
   async remove(id: string): Promise<void> {
+    // Validate if id is a valid MongoDB ObjectId
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid event ID format');
+    }
     const result = await this.eventModel.findByIdAndDelete(id).exec();
     if (!result) throw new NotFoundException('Event not found');
   }
 
   // ====================== STUDENT BOOKING ======================
   async bookEvent(eventId: string, studentId: string) {
+    // Validate if eventId is a valid MongoDB ObjectId
+    if (!Types.ObjectId.isValid(eventId)) {
+      throw new BadRequestException('Invalid event ID format');
+    }
     const event = await this.eventModel.findById(eventId).exec();
     if (!event) throw new NotFoundException('Event not found');
 
@@ -104,6 +120,10 @@ export class EventService {
   }
 
   async getBookingsForEvent(eventId: string) {
+    // Validate if eventId is a valid MongoDB ObjectId
+    if (!Types.ObjectId.isValid(eventId)) {
+      throw new BadRequestException('Invalid event ID format');
+    }
     return this.bookingModel
       .find({ event: new Types.ObjectId(eventId) })
       .populate('event', 'name date time venue schoolId')

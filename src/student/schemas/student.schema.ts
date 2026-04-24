@@ -4,6 +4,7 @@ import * as mongoose from 'mongoose';
 import AutoIncrementFactory from 'mongoose-sequence';
 // import { School } from '../school/schema/school.schema'; // import School schema
 import { School } from '../../school/schema/school.schema';
+import { Class } from '../../class/schemas/class.schemas';
 export type StudentDocument = Student & Document;
 
 @Schema({ timestamps: true })
@@ -22,7 +23,7 @@ export class Student {
   @Prop() currentGrade?: string;
   @Prop({ default: 'inactive' }) status?: string;
 
-  @Prop({ unique: true }) studentId?: number;
+  // @Prop({ unique: true }) studentId?: number;
 
   @Prop({ required: true, unique: true, lowercase: true }) email?: string;
   @Prop({ required: true }) password?: string;
@@ -30,7 +31,8 @@ export class Student {
   @Prop() birthCertificate?: string;
   @Prop() bForm?: string;
   @Prop() photo?: string;
-
+  @Prop({ type: Types.ObjectId, ref: Class.name, required: true })
+  classId?: Types.ObjectId;
   // ✅ Reference to School
   @Prop({ type: Types.ObjectId, ref: School.name, required: true })
   schoolId?: Types.ObjectId;
@@ -39,5 +41,5 @@ export class Student {
 export const StudentSchema = SchemaFactory.createForClass(Student);
 
 // ✅ Auto-increment plugin for studentId
-const AutoIncrement = AutoIncrementFactory(mongoose);
-StudentSchema.plugin(AutoIncrement, { inc_field: 'studentId' });
+// const AutoIncrement = AutoIncrementFactory(mongoose);
+// StudentSchema.plugin(AutoIncrement, { inc_field: 'studentId' });

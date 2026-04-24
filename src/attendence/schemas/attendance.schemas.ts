@@ -3,11 +3,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 // import { Student } from 'src/student/schemas/student.schema';
-import { Student } from '../../student/schemas/student.schema';
+import { Student,StudentSchema } from '../../student/schemas/student.schema';
 // import { Class } from 'src/class/schemas/class.schemas';
-import { Class } from '../../class/schemas/class.schemas';
+import { Class,ClassSchema } from '../../class/schemas/class.schemas';
 // import { School } from 'src/school/schema/school.schema';
-import { School } from '../../school/schema/school.schema';
+import { School,SchoolSchema } from '../../school/schema/school.schema';
 
 export type AttendanceDocument = Attendance & Document;
 

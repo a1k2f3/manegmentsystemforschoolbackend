@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { JobApplication } from '../../jobapplication/schemas/jobapplication.schema';
 
 export type SchoolDocument = School & Document;
 
@@ -11,6 +12,7 @@ export class School {
   @Prop({ required: true }) contactPhone?: string;
   @Prop({required:true })password?:string;
   @Prop() website?: string;
+
   @Prop({ required: true }) registrationNumber?: string;
   @Prop({ required: true }) establishedYear?: number;
   @Prop({ required: true}) schoolType?: string;
@@ -27,6 +29,8 @@ export class School {
   @Prop() noc?: string;
   @Prop() logo?: string;
   @Prop({ default: 'pending', enum: ['pending', 'approved', 'rejected'] }) status?: string;
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'JobApplication' }], default: [] })
+jobApplications?: Types.ObjectId[];
 }
 
 export const SchoolSchema = SchemaFactory.createForClass(School);

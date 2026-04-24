@@ -74,6 +74,7 @@ export class DepartmentService {
     const department = await this.departmentModel.findById(departmentId);
     if (!department) throw new NotFoundException('Department not found');
 
+    if (!department.teachers) department.teachers = [];
     if (!department.teachers.includes(new Types.ObjectId(teacherId))) {
       department.teachers.push(new Types.ObjectId(teacherId));
       await department.save();

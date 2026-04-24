@@ -1,10 +1,10 @@
-import { IsNotEmpty } from "class-validator";
+import { IsMongoId, IsNotEmpty } from "class-validator";
 import { Types } from "mongoose";
 
 export class CreateJobApplicationDto {
-  readonly name: string;
-  readonly email: string;
-  readonly phone: string;
+  readonly name?: string;
+  readonly email?: string;
+  readonly phone?: string;
   readonly address?: string;
   readonly position?: string;
   readonly gender?: string;
@@ -19,6 +19,7 @@ export class CreateJobApplicationDto {
   readonly cv?: string;
   readonly degree?: string;
   readonly photo?: string;
-    @IsNotEmpty()
-    schoolId: Types.ObjectId;
+     @IsNotEmpty()
+  @IsMongoId()
+  schoolId?: string;
 }

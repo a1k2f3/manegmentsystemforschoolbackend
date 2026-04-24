@@ -1,6 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { School } from '../../school/schema/school.schema';
+
+export enum JobApplicationStatus {
+  PENDING = 'pending',
+  REJECTED = 'rejected',
+  SHORTLISTED = 'shortlisted',
+  ACCEPTED = 'accepted',
+}
+
 @Schema({ timestamps: true })
 export class JobApplication extends Document {
   @Prop({ required: true })
@@ -42,16 +50,26 @@ export class JobApplication extends Document {
   @Prop()
   skills?: string;
 
-  // New fields for uploaded file URLs
+  // Files
   @Prop()
   cv?: string;
 
   @Prop()
   degree?: string;
-@Prop({ type: Types.ObjectId, ref: School.name, required: true })
-  schoolId?: Types.ObjectId;
+
   @Prop()
   photo?: string;
+
+  // ✅ ENUM STATUS
+  @Prop({
+    enum: JobApplicationStatus,
+    default: JobApplicationStatus.PENDING,
+  })
+  status?: JobApplicationStatus;
+
+  @Prop({ type: Types.ObjectId, ref: School.name, required: true })
+  schoolId?: Types.ObjectId;
 }
 
-export const JobApplicationSchema = SchemaFactory.createForClass(JobApplication);
+export const JobApplicationSchema =
+  SchemaFactory.createForClass(JobApplication);

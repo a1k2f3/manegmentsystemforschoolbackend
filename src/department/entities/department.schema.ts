@@ -4,25 +4,25 @@ import { Document, Types } from 'mongoose';
 @Schema({ timestamps: true })
 export class Department extends Document {
   @Prop({ required: true, trim: true, unique: true })
-  name: string; // e.g. "Computer Science", "Electrical Engineering"
+  name?: string; // e.g. "Computer Science", "Electrical Engineering"
 
   @Prop({ required: true, trim: true })
-  code: string; // e.g. "CS", "EE", "BBA"
+  code?: string; // e.g. "CS", "EE", "BBA"
 
   @Prop({ type: Types.ObjectId, ref: 'School', required: true })
-  school: Types.ObjectId;
+  school?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Teacher', default: null })
-  hod: Types.ObjectId; // Head of Department
+  hod?: Types.ObjectId; // Head of Department
 
   @Prop([{ type: Types.ObjectId, ref: 'Teacher' }])
-  teachers: Types.ObjectId[];
+  teachers?: Types.ObjectId[];
 
   @Prop({ type: String, trim: true })
   description?: string;
 
   @Prop({ default: true })
-  isActive: boolean;
+  isActive?: boolean;
 
   @Prop({ type: Date, default: null })
   deactivatedAt?: Date;

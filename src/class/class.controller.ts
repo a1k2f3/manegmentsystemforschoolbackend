@@ -26,7 +26,7 @@ export class ClassController {
   }
 
   // classes for a school — placed before dynamic :id to avoid route conflicts
-  @Get('school/:schoolId')
+  @Get('school')
   async getBySchool(@Param('schoolId') schoolId: string) {
     return this.classService.findBySchool(schoolId);
   }
