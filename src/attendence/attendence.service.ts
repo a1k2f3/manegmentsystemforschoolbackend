@@ -12,6 +12,7 @@ import { Student } from '../student/schemas/student.schema';
 // import { Student, StudentDocument } from 'src/student/schemas/student.schema';
 // import { Student, StudentDocument } from 'src/student/schemas/student.schema';
 import * as QRCode from 'qrcode';
+import { CreateBulkAttendanceDto } from './dto/create-bulk-attendance.dto';
 @Injectable()
 export class AttendanceService {
   constructor(
@@ -25,9 +26,9 @@ export class AttendanceService {
   async markAttendance(dto: CreateAttendanceDto) {
     const { studentId, classId, schoolId, status } = dto;
 
-    if (![studentId, classId, schoolId].every(id => Types.ObjectId.isValid(id))) {
-      throw new BadRequestException('Invalid IDs provided');
-    }
+    if (!studentId || !classId || !schoolId) {
+    throw new BadRequestException('Missing required identification fields');
+  }
 
     const [student, klass, school] = await Promise.all([
       this.studentModel.findById(studentId),
@@ -179,7 +180,10 @@ async markViaQr(studentId: string, qrData: any) {
 
     return report;
   }
-
+async createBulk(createBulkDto: CreateBulkAttendanceDto) {
+    // insertMany validates against your schema automatically
+    return this.attendanceModel.insertMany(createBulkDto.records);
+  }
   // ✅ Attendance percentage analytics
   async getAttendancePercentage(classId: string, month: number, year: number) {
     const report = await this.monthlyReport(classId, month, year);

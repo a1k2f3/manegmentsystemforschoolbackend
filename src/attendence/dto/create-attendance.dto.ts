@@ -4,17 +4,17 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreateAttendanceDto {
   @IsNotEmpty()
   @IsString()
-  studentId: string;
+  studentId?: string;
 
   @IsNotEmpty()
   @IsString()
-  classId: string;
+  classId?: string;
 
   @IsNotEmpty()
   @IsString()
-  schoolId: string;
+  schoolId?: string;
 
   @IsNotEmpty()
   @IsString()
-  status: 'present' | 'absent' | 'leave';
+  status?: 'present' | 'absent' | 'leave';
 }

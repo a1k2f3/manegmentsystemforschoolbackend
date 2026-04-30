@@ -1,7 +1,9 @@
 // src/attendance/attendance.controller.ts
-import { Controller, Post, Body, Get, Param, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { AttendanceService } from './attendence.service';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
+import { CreateBulkAttendanceDto } from './dto/create-bulk-attendance.dto';
+// import { CreateBulkAttendanceDto } from './dto/create-bulk-attendance.dto';
 
 @Controller('attendance')
 export class AttendanceController {
@@ -19,8 +21,6 @@ async generateQr(
 ) {
   return this.attendanceService.generateQrCode(classId, schoolId);
 }
-
-
 // 🎯 Mark attendance using QR code (mobile scan)
 @Post('scan')
 async scanAttendance(
@@ -29,6 +29,16 @@ async scanAttendance(
 ) {
   return this.attendanceService.markViaQr(studentId, qrData);
 }
+@Post('bulk/mark')
+  @HttpCode(HttpStatus.CREATED)
+  async createBulk(@Body() createBulkDto: CreateBulkAttendanceDto) {
+    const result = await this.attendanceService.createBulk(createBulkDto);
+    return {
+      message: 'Bulk attendance recorded successfully',
+      count: result.length,
+      data: result,
+    };
+  }
   // Class-wise
   @Get('class/:classId')
   async classAttendance(
