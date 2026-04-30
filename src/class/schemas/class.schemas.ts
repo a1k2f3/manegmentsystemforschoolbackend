@@ -20,7 +20,7 @@ export class Class {
 
   // ⭐ Reference to Students
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Student' }], default: [] })
-  studentIds?: Types.ObjectId[];
+  student?: Types.ObjectId[];
 
   @Prop({ default: 0 })
   strength?: number;
@@ -30,7 +30,6 @@ export class Class {
 
   @Prop()
   description?: string;
-
   @Prop()
   roomNumber?: string;
 }

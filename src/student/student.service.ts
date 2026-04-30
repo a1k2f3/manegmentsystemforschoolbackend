@@ -11,10 +11,16 @@ import { Student, StudentDocument } from './schemas/student.schema';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { School } from '../school/schema/school.schema';
+import { Class } from '../class/schemas/class.schemas';
 @Injectable()
 export class StudentService {
   constructor(
     @InjectModel(Student.name) private readonly studentModel: Model<StudentDocument>,
+     @InjectModel(Class.name) private readonly classModel: Model<Class>,
+    @InjectModel(School.name)
+
+      private readonly schoolModel: Model<School>, 
     private readonly jwtService: JwtService,
   ) {}
 
@@ -23,64 +29,52 @@ async createStudent(createStudentDto: CreateStudentDto, files?: any) {
   try {
     const { email, password, schoolId, classId } = createStudentDto;
 
-    // 1. Ensure IDs exist AND are valid ObjectIds
-    // This check satisfies TypeScript because it confirms the variables aren't undefined
+    // 1. Validation (Keep your existing validation logic here...)
     if (!schoolId || !classId || !Types.ObjectId.isValid(schoolId) || !Types.ObjectId.isValid(classId)) {
       throw new BadRequestException('School ID and Class ID are required and must be valid');
     }
 
-    // 2. Check if email already exists
-    const existingStudent = await this.studentModel.findOne({ email });
-    if (existingStudent) {
-      throw new BadRequestException('Email already registered');
-    }
+    // 2. Check existence & Hashing (Keep your existing logic here...)
+    // ... code ...
 
-    // 3. Extract file paths securely
-    const birthCertificate = files?.birthCertificate?.[0]?.path || null;
-    const bForm = files?.bForm?.[0]?.path || null;
-    const photo = files?.photo?.[0]?.path || null;
-
-    // 4. Hash the password (check if password exists to satisfy TS)
-    if (!password) {
-      throw new BadRequestException('Password is required');
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // 5. Create new instance
-    // We use "as string" here because our check above guaranteed they aren't undefined
+    // 3. Create and Save Student
     const newStudent = new this.studentModel({
       ...createStudentDto,
-      password: hashedPassword,
+      password: await bcrypt.hash(password, 10),
       schoolId: new Types.ObjectId(schoolId as string),
       classId: new Types.ObjectId(classId as string),
-      birthCertificate,
-      bForm,
-      photo,
+      birthCertificate: files?.birthCertificate?.[0]?.path || null,
+      bForm: files?.bForm?.[0]?.path || null,
+      photo: files?.photo?.[0]?.path || null,
       status: 'inactive',
     });
 
     const savedStudent = await newStudent.save();
 
+    // --- NEW LOGIC: Update Class and School ---
+    
+    // Add student ID to Class array
+    await this.classModel.findByIdAndUpdate(
+      classId,
+      { $push: { student: savedStudent._id } }
+    );
+
+    // Add student ID to School array
+    await this.schoolModel.findByIdAndUpdate(
+      schoolId,
+      { $push: { student: savedStudent._id } }
+    );
+
+    // ------------------------------------------
+
     return {
-      message: 'Student registered successfully',
+      message: 'Student registered and linked to Class/School successfully',
       student: savedStudent,
     };
 
   } catch (error: any) {
-    if (error.code === 11000) {
-      throw new BadRequestException('Unique constraint violation (Email or StudentId)');
-    }
-
-    if (error.message?.includes('buffering timed out')) {
-      throw new InternalServerErrorException('Database connection lost or too slow');
-    }
-
-    // Re-throw the original BadRequestException if it was one of ours
-    if (error instanceof BadRequestException) {
-      throw error;
-    }
-
-    throw new BadRequestException(error?.message || 'Registration failed');
+    // Keep your existing catch block...
+    throw error;
   }
 }
   // 🔐 Login Student

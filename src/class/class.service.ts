@@ -57,17 +57,17 @@ async addStudentToClass(classId: string, studentId: string) {
   if (!klass) throw new NotFoundException('Class not found');
 
   // Initialize studentIds if undefined
-  if (!klass.studentIds) {
-    klass.studentIds = [];
+  if (!klass.student) {
+    klass.student = [];
   }
 
   // prevent duplicate student entry
-  if (klass.studentIds.includes(studentId as any)) {
+  if (klass.student.includes(studentId as any)) {
     throw new BadRequestException('Student already in this class');
   }
 
-  klass.studentIds.push(new Types.ObjectId(studentId));
-  klass.strength = klass.studentIds.length;
+  klass.student.push(new Types.ObjectId(studentId));
+  klass.strength = klass.student.length;
 
   return klass.save();
 }
@@ -79,16 +79,16 @@ async removeStudentFromClass(classId: string, studentId: string) {
   const klass = await this.classModel.findById(classId);
   if (!klass) throw new NotFoundException('Class not found');
 
-  // Initialize studentIds if undefined
-  if (!klass.studentIds) {
-    klass.studentIds = [];
+  // Initialize student array if undefined
+  if (!klass.student) {
+    klass.student = [];
   }
 
-  klass.studentIds = klass.studentIds.filter(
+  klass.student = klass.student.filter(
     id => id.toString() !== studentId,
   );
 
-  klass.strength = klass.studentIds.length;
+  klass.strength = klass.student.length;
 
   return klass.save();
 }

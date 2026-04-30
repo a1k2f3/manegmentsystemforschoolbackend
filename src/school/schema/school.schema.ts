@@ -31,6 +31,10 @@ export class School {
   @Prop({ default: 'pending', enum: ['pending', 'approved', 'rejected'] }) status?: string;
   @Prop({ type: [{ type: Types.ObjectId, ref: 'JobApplication' }], default: [] })
 jobApplications?: Types.ObjectId[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Student' }], default: [] })
+student?: Types.ObjectId[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Class' }], default: [] })
+classes?: Types.ObjectId[];
 }
 
 export const SchoolSchema = SchemaFactory.createForClass(School);
